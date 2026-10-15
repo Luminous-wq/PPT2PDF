@@ -63,7 +63,7 @@ py -3.10 -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-如果还没有 `requirements.txt`，可以安装：
+如有python基本环境，可直接
 
 ```powershell
 python -m pip install pywin32 PyMuPDF numpy openai python-dotenv
@@ -106,14 +106,19 @@ Agent 模式在基础文件处理工具上额外添加自然语言理解和 Func
 
 ### 1. 配置 API
 
-在项目根目录创建 `.env` 文件（不要提交至 GitHub）。使用 OpenAI API 时：
+在项目根目录创建 `.env` 文件。
+目前项目使用的OpenRouter, 注册就有一个api，每日50次调度，日常研究绘图使用足以。
+```env
+OPENAI_API_KEY=sk-你的密钥
+OPENAI_MODEL=openrouter/free
+```
+使用 OpenAI API 时：
 
 ```env
 OPENAI_API_KEY=your-api-key-here
 OPENAI_MODEL=your-supported-model
 ```
-
-如果使用 OpenRouter 等兼容服务，需要根据 `agent.py` 中的客户端配置设置对应的 API Key、`base_url` 和模型名称；**仅修改 `.env` 不一定足够**。
+后续改为self.client = OpenAI()，为空即可。
 
 ### 2. 启动 Agent
 
@@ -124,14 +129,12 @@ python main.py
 输入示例：
 
 ```text
-你 > 把 C:\path\to\method.pptx 第 28 页导出成 PDF，裁掉白边，保留 1pt
+请输入 > 把 C:\path\to\method.pptx 第 28 页导出成 PDF，裁掉白边，保留 1pt
 
-你 > 把 C:\path\to\method.pptx 第 3、5-7 页导出来，每页尺寸保持一致
+请输入 > 把 C:\path\to\method.pptx 第 3、5-7 页导出来，每页尺寸保持一致
 
-你 > 把这个 PPT 改成导出第 9 页
+请输入 > 把这个 PPT 改成导出第 9 页
 ```
-
-是否能正确理解最后一条连续对话，取决于 Agent 是否保留当前会话的历史上下文。
 
 ### 3. Agent 的执行流程
 
@@ -176,18 +179,3 @@ A：设置 `pages="28"` 即可。
 
 **Q：如何完全不留额外白边？**  
 A：设置 `margin=0`。裁剪精度仍受边界检测和渲染分辨率影响。
-
-## 安全建议
-
-将以下内容放入 `.gitignore`：
-
-```gitignore
-.env
-.venv/
-__pycache__/
-*.pyc
-```
-
-不要将真实 API Key 上传到公开仓库。
-
----
