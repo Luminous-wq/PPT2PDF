@@ -38,8 +38,6 @@ PPT2PDF/
 └── .gitignore
 ```
 
-> 如果你的项目中 `export_ppt_to_cropped_pdf()` 放在其他文件，请按实际模块路径调整导入语句。
-
 ## 安装
 
 ### 1. 下载项目并进入目录
@@ -48,16 +46,7 @@ PPT2PDF/
 cd C:\path\to\PPT2PDF
 ```
 
-### 2. 创建虚拟环境（推荐）
-
-```powershell
-py -3.10 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-如果 PowerShell 不允许激活虚拟环境，可以直接使用 `.\.venv\Scripts\python.exe` 执行后续命令。
-
-### 3. 安装依赖
+### 2. 安装依赖
 
 ```powershell
 python -m pip install -r requirements.txt
@@ -98,11 +87,7 @@ print(result)
 | `crop_mode`   | `per_page`（逐页）或 `union`（统一边界）                  | `"per_page"`                |
 | `dpi`         | 用于检测内容范围的临时渲染精度                            | `200`                       |
 
-**注意**：相对路径是相对于程序运行时的**当前工作目录**，并不一定是 `.py` 文件所在目录。Windows 路径建议写成 `r"C:\..."` 或使用正斜杠 `C:/...`。
-
-## 使用方式二：自然语言 Agent（需要模型 API）
-
-Agent 模式在基础文件处理工具上额外添加自然语言理解和 Function Calling。**PPT 转换与裁剪仍由本地 Python 工具执行**，大模型仅负责选择工具和填写参数。
+## 使用方式二：Agent模式（需要模型 API）
 
 ### 1. 配置 API
 
@@ -136,22 +121,6 @@ python main.py
 请输入 > 把这个 PPT 改成导出第 9 页
 ```
 
-### 3. Agent 的执行流程
-
-```text
-用户自然语言
-    ↓
-LLM 解析文件、页码、裁剪参数
-    ↓
-Function Calling：export_ppt_pages(...)
-    ↓
-本地 PowerPoint 将 PPT 导出为 PDF
-    ↓
-PyMuPDF 检测并裁剪内容边界
-    ↓
-保存最终 PDF，返回文件路径
-```
-
 ## 裁剪模式说明
 
 - **`per_page`**：分别计算每页内容的外接矩形；不同页可能得到不同大小的 PDF 页面。适合独立插图。
@@ -165,17 +134,3 @@ PyMuPDF 检测并裁剪内容边界
 4. **`union` 的前提**：适用于来自相同版式和坐标系的页面，不适合混用不同尺寸的 PDF 页面。
 5. **PowerPoint 依赖**：必须能在 Windows 上正常启动 Microsoft PowerPoint；转换失败时检查安装情况与文件权限。
 6. **Agent 成本**：直接调用 Python 函数不需要大模型 API；Agent 模式可能产生 API 费用或受到免费额度限制。
-
-## 常见问题
-
-**Q：如何避免 `fitz` 弃用警告？**  
-A：建议将 `import fitz` 改为 `import pymupdf as fitz`，保持后续代码不变。
-
-**Q：可以使用相对路径吗？**  
-A：可以。工具内部通过 `os.path.abspath()` 将路径转换为绝对路径。
-
-**Q：如何只导出一页？**  
-A：设置 `pages="28"` 即可。
-
-**Q：如何完全不留额外白边？**  
-A：设置 `margin=0`。裁剪精度仍受边界检测和渲染分辨率影响。
