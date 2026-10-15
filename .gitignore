@@ -1,0 +1,16 @@
+# API 密钥和环境变量
+.env
+.env.*
+# Python 缓存
+__pycache__/
+*.pyc
+# IDE 临时文件
+.vscode/
+.idea/
+
+# 临时文件
+*.tmp
+*.log
+
+# PPT Agent 生成的 PDF
+*_cropped.pdf
